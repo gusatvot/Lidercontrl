@@ -1,0 +1,47 @@
+{
+  "name": "LiderControl — Finanzas Familiares",
+  "short_name": "LiderControl",
+  "description": "Dashboard financiero familiar con chat y transferencias. Gestión de gastos fijos, variables, ahorros y deudas.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#070708",
+  "theme_color": "#6366f1",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "es",
+  "categories": ["finance", "productivity", "lifestyle"],
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "url": "/?section=dashboard",
+      "description": "Ver resumen financiero"
+    },
+    {
+      "name": "Agregar Gasto",
+      "short_name": "Gasto",
+      "url": "/?action=new-gasto",
+      "description": "Registrar un nuevo gasto"
+    },
+    {
+      "name": "Chat",
+      "short_name": "Chat",
+      "url": "/?section=chat",
+      "description": "Abrir chat familiar"
+    }
+  ]
+}

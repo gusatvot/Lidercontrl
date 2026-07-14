@@ -1,0 +1,156 @@
+// LiderControl - Schema SQLite (desarrollo local)
+// Para producción con Postgres: cp prisma/schema.postgres.prisma prisma/schema.prisma
+// Ver DEPLOY.md para instrucciones de migración.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ============= USUARIOS Y CUENTAS =============
+
+model Usuario {
+  id              String   @id @default(cuid())
+  nombre          String
+  email           String   @unique
+  username        String?  @unique // login alternativo
+  password        String?  // hash bcrypt (null si no se registró aún)
+  avatar          String?
+  color           String   @default("#6366f1")
+  emailVerificado Boolean  @default(false)
+  tokenVerificacion String? // token único para verificar email
+  tokenExpira     DateTime?
+  creadoEn        DateTime @default(now())
+
+  cuenta           Cuenta?
+  gastosFijos      GastoFijo[]
+  gastosVariables  GastoVariable[]
+  metasAhorro      MetaAhorro[]
+  ingresos         Ingreso[]
+  mensajesEnviados Mensaje[]      @relation("MensajesRemitente")
+  mensajesRecibidos Mensaje[]     @relation("MensajesDestinatario")
+  transferenciasEnviadas    Transferencia[] @relation("TransfOrigen")
+  transferenciasRecibidas   Transferencia[] @relation("TransfDestino")
+}
+
+model Cuenta {
+  id           String  @id @default(cuid())
+  usuarioId    String  @unique
+  usuario      Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  ingresoMensual    Float  @default(0)
+  metaAhorroMensual Float  @default(0)
+  presupuestoVariables Float @default(0) // presupuesto mensual para gastos variables
+  saldo        Float  @default(0)
+  actualizadoEn DateTime @updatedAt
+}
+
+// ============= GASTOS =============
+
+model GastoFijo {
+  id           String   @id @default(cuid())
+  usuarioId    String
+  usuario      Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  concepto     String
+  categoria    String   // Vivienda, Educación, Deudas, Servicios, etc.
+  monto        Float
+  diaVencimiento Int    // día del mes (1-31)
+  mes          Int      // 1-12
+  anio         Int      // 2026
+  estado       String   @default("pendiente") // "pagado" | "pendiente"
+  nota         String?
+  creadoEn     DateTime @default(now())
+  actualizadoEn DateTime @updatedAt
+
+  @@index([usuarioId, mes, anio])
+  @@index([estado])
+}
+
+model GastoVariable {
+  id           String   @id @default(cuid())
+  usuarioId    String
+  usuario      Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  concepto     String
+  categoria    String   // Comida, Ocio, Transporte, etc.
+  monto        Float
+  fecha        DateTime @default(now())
+  mes          Int
+  anio         Int
+  creadoEn     DateTime @default(now())
+
+  @@index([usuarioId, mes, anio])
+}
+
+model MetaAhorro {
+  id           String   @id @default(cuid())
+  usuarioId    String
+  usuario      Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  titulo       String   // ej. "Viaje", "Emergency Fund"
+  montoObjetivo Float
+  montoActual  Float    @default(0)
+  mes          Int
+  anio         Int
+  creadoEn     DateTime @default(now())
+
+  @@index([usuarioId, mes, anio])
+}
+
+model Ingreso {
+  id           String   @id @default(cuid())
+  usuarioId    String
+  usuario      Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  concepto     String
+  categoria    String   // "Sueldo", "Extra", "Regalo", "Reembolso", "Inversión", "Otros"
+  monto        Float
+  fecha        DateTime @default(now())
+  mes          Int
+  anio         Int
+  esFijo       Boolean  @default(false) // true si es recurrente (sueldo), false si es puntual
+  nota         String?
+  creadoEn     DateTime @default(now())
+
+  @@index([usuarioId, mes, anio])
+  @@index([categoria])
+}
+
+// ============= CHAT =============
+
+model Mensaje {
+  id            String   @id @default(cuid())
+  remitenteId   String
+  destinatarioId String
+  remitente     Usuario  @relation("MensajesRemitente", fields: [remitenteId], references: [id], onDelete: Cascade)
+  destinatario  Usuario  @relation("MensajesDestinatario", fields: [destinatarioId], references: [id], onDelete: Cascade)
+  tipo          String   @default("texto") // "texto" | "audio" | "transferencia"
+  contenido     String?  // texto del mensaje o URL del audio
+  transcripcion String?  // para audios
+  duracionSeg   Int?     // para audios
+  leido         Boolean  @default(false)
+  creadoEn      DateTime @default(now())
+
+  transferencia Transferencia?
+
+  @@index([remitenteId, destinatarioId])
+  @@index([creadoEn])
+}
+
+model Transferencia {
+  id            String   @id @default(cuid())
+  mensajeId     String   @unique
+  mensaje       Mensaje  @relation(fields: [mensajeId], references: [id], onDelete: Cascade)
+  monto         Float
+  concepto      String
+  estado        String   @default("pendiente") // "pendiente" | "aceptada" | "rechazada" | "completada"
+  cuentaOrigenId  String
+  cuentaDestinoId String
+  creadoEn      DateTime @default(now())
+  actualizadoEn DateTime @updatedAt
+
+  cuentaOrigen  Usuario  @relation("TransfOrigen", fields: [cuentaOrigenId], references: [id])
+  cuentaDestino Usuario  @relation("TransfDestino", fields: [cuentaDestinoId], references: [id])
+
+  @@index([estado])
+}
