@@ -1,13 +1,14 @@
-// WintexVEO - Schema de base de datos
-// Modelo relacional listo para migrar a PostgreSQL/Supabase
+// LiderControl - Schema PostgreSQL (producción)
+// Para dev local con SQLite: cp prisma/schema.sqlite.prisma prisma/schema.prisma
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 // ============= USUARIOS Y CUENTAS =============
@@ -16,12 +17,12 @@ model Usuario {
   id              String   @id @default(cuid())
   nombre          String
   email           String   @unique
-  username        String?  @unique // login alternativo
-  password        String?  // hash bcrypt (null si no se registró aún)
+  username        String?  @unique
+  password        String?
   avatar          String?
   color           String   @default("#6366f1")
   emailVerificado Boolean  @default(false)
-  tokenVerificacion String? // token único para verificar email
+  tokenVerificacion String?
   tokenExpira     DateTime?
   creadoEn        DateTime @default(now())
 
@@ -42,24 +43,22 @@ model Cuenta {
   usuario      Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
   ingresoMensual    Float  @default(0)
   metaAhorroMensual Float  @default(0)
-  presupuestoVariables Float @default(0) // presupuesto mensual para gastos variables
+  presupuestoVariables Float @default(0)
   saldo        Float  @default(0)
   actualizadoEn DateTime @updatedAt
 }
-
-// ============= GASTOS =============
 
 model GastoFijo {
   id           String   @id @default(cuid())
   usuarioId    String
   usuario      Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
   concepto     String
-  categoria    String   // Vivienda, Educación, Deudas, Servicios, etc.
+  categoria    String
   monto        Float
-  diaVencimiento Int    // día del mes (1-31)
-  mes          Int      // 1-12
-  anio         Int      // 2026
-  estado       String   @default("pendiente") // "pagado" | "pendiente"
+  diaVencimiento Int
+  mes          Int
+  anio         Int
+  estado       String   @default("pendiente")
   nota         String?
   creadoEn     DateTime @default(now())
   actualizadoEn DateTime @updatedAt
@@ -73,7 +72,7 @@ model GastoVariable {
   usuarioId    String
   usuario      Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
   concepto     String
-  categoria    String   // Comida, Ocio, Transporte, etc.
+  categoria    String
   monto        Float
   fecha        DateTime @default(now())
   mes          Int
@@ -87,7 +86,7 @@ model MetaAhorro {
   id           String   @id @default(cuid())
   usuarioId    String
   usuario      Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
-  titulo       String   // ej. "Viaje", "Emergency Fund"
+  titulo       String
   montoObjetivo Float
   montoActual  Float    @default(0)
   mes          Int
@@ -102,12 +101,12 @@ model Ingreso {
   usuarioId    String
   usuario      Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
   concepto     String
-  categoria    String   // "Sueldo", "Extra", "Regalo", "Reembolso", "Inversión", "Otros"
+  categoria    String
   monto        Float
   fecha        DateTime @default(now())
   mes          Int
   anio         Int
-  esFijo       Boolean  @default(false) // true si es recurrente (sueldo), false si es puntual
+  esFijo       Boolean  @default(false)
   nota         String?
   creadoEn     DateTime @default(now())
 
@@ -115,18 +114,16 @@ model Ingreso {
   @@index([categoria])
 }
 
-// ============= CHAT =============
-
 model Mensaje {
   id            String   @id @default(cuid())
   remitenteId   String
   destinatarioId String
   remitente     Usuario  @relation("MensajesRemitente", fields: [remitenteId], references: [id], onDelete: Cascade)
   destinatario  Usuario  @relation("MensajesDestinatario", fields: [destinatarioId], references: [id], onDelete: Cascade)
-  tipo          String   @default("texto") // "texto" | "audio" | "transferencia"
-  contenido     String?  // texto del mensaje o URL del audio
-  transcripcion String?  // para audios
-  duracionSeg   Int?     // para audios
+  tipo          String   @default("texto")
+  contenido     String?
+  transcripcion String?
+  duracionSeg   Int?
   leido         Boolean  @default(false)
   creadoEn      DateTime @default(now())
 
@@ -142,7 +139,7 @@ model Transferencia {
   mensaje       Mensaje  @relation(fields: [mensajeId], references: [id], onDelete: Cascade)
   monto         Float
   concepto      String
-  estado        String   @default("pendiente") // "pendiente" | "aceptada" | "rechazada" | "completada"
+  estado        String   @default("pendiente")
   cuentaOrigenId  String
   cuentaDestinoId String
   creadoEn      DateTime @default(now())
