@@ -1,6 +1,5 @@
-// LiderControl - Schema SQLite (desarrollo local)
-// Para producción con Postgres: cp prisma/schema.postgres.prisma prisma/schema.prisma
-// Ver DEPLOY.md para instrucciones de migración.
+// WintexVEO - Schema de base de datos
+// Modelo relacional listo para migrar a PostgreSQL/Supabase
 
 generator client {
   provider = "prisma-client-js"

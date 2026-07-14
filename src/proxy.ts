@@ -25,7 +25,7 @@ function checkRateLimit(key: string, max: number): { allowed: boolean; remaining
   return { allowed, remaining: Math.max(0, max - current.count), resetAt: current.resetAt }
 }
 
-export function middleware(req: NextRequest) {
+export function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl
   // Solo limitar el callback de credenciales (el intento real de login)
   // No limitar csrf, _log, session, etc. que NextAuth llama automáticamente
