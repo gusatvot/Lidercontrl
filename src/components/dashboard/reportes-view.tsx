@@ -6,7 +6,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { motion } from 'framer-motion'
 import {
   ChartColumn, TrendingUp, TrendingDown, Search, Filter, Download,
-  ArrowUpRight, ArrowDownRight, Wallet, PiggyBank, AlertCircle,
+  ArrowUpRight, ArrowDownRight, Wallet, PiggyBank, AlertCircle, Calendar, X,
 } from 'lucide-react'
 import { formatCurrency, formatDate } from '@/lib/format'
 import {
@@ -51,6 +51,8 @@ export function ReportesView() {
   const [busqueda, setBusqueda] = useState('')
   const [categoriaFiltro, setCategoriaFiltro] = useState<string>('todas')
   const [tipoFiltro, setTipoFiltro] = useState<TipoFiltro>('todos')
+  const [fechaDesde, setFechaDesde] = useState<string>('')
+  const [fechaHasta, setFechaHasta] = useState<string>('')
 
   // Filtrar movimientos
   const movimientosFiltrados = useMemo(() => {
@@ -63,9 +65,16 @@ export function ReportesView() {
       if (categoriaFiltro !== 'todas' && m.categoria !== categoriaFiltro) return false
       // Filtro por texto
       if (busqueda && !m.concepto.toLowerCase().includes(busqueda.toLowerCase())) return false
+      // Filtro por rango de fechas
+      if (fechaDesde || fechaHasta) {
+        const fechaMov = new Date(m.fecha)
+        if (isNaN(fechaMov.getTime())) return false
+        if (fechaDesde && fechaMov < new Date(fechaDesde + 'T00:00:00')) return false
+        if (fechaHasta && fechaMov > new Date(fechaHasta + 'T23:59:59')) return false
+      }
       return true
     })
-  }, [data, tipoFiltro, categoriaFiltro, busqueda])
+  }, [data, tipoFiltro, categoriaFiltro, busqueda, fechaDesde, fechaHasta])
 
   // Categorías únicas para el dropdown
   const categorias: string[] = useMemo(() => {
@@ -324,13 +333,49 @@ export function ReportesView() {
             </SelectContent>
           </Select>
 
+          {/* Filtro por rango de fechas */}
+          <div className="flex items-center gap-2">
+            <div className="relative">
+              <Calendar className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)] z-10" />
+              <Input
+                type="date"
+                value={fechaDesde}
+                onChange={(e) => setFechaDesde(e.target.value)}
+                className="bg-[var(--muted)] border-[var(--border)] pl-10 w-[150px]"
+                title="Desde"
+              />
+            </div>
+            <span className="text-[var(--muted-foreground)] text-xs">→</span>
+            <div className="relative">
+              <Calendar className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)] z-10" />
+              <Input
+                type="date"
+                value={fechaHasta}
+                onChange={(e) => setFechaHasta(e.target.value)}
+                className="bg-[var(--muted)] border-[var(--border)] pl-10 w-[150px]"
+                title="Hasta"
+              />
+            </div>
+            {(fechaDesde || fechaHasta) && (
+              <button
+                onClick={() => { setFechaDesde(''); setFechaHasta('') }}
+                className="px-2 py-1 rounded-lg text-xs text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)] cursor-pointer transition-all"
+                title="Limpiar fechas"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
+
           {/* Limpiar filtros */}
-          {(busqueda || categoriaFiltro !== 'todas' || tipoFiltro !== 'todos') && (
+          {(busqueda || categoriaFiltro !== 'todas' || tipoFiltro !== 'todos' || fechaDesde || fechaHasta) && (
             <button
               onClick={() => {
                 setBusqueda('')
                 setCategoriaFiltro('todas')
                 setTipoFiltro('todos')
+                setFechaDesde('')
+                setFechaHasta('')
               }}
               className="px-3 py-2 rounded-lg text-xs text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)] cursor-pointer transition-all"
             >
