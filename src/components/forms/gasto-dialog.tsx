@@ -65,6 +65,7 @@ export function GastoDialog({ open, onOpenChange }: GastoDialogProps) {
       concepto: '',
       categoria: '',
       monto: undefined,
+      fecha: new Date().toISOString().slice(0, 10),
       diaVencimiento: new Date().getDate(),
       estado: 'pendiente',
       nota: '',
@@ -87,6 +88,7 @@ export function GastoDialog({ open, onOpenChange }: GastoDialogProps) {
           concepto: gasto.concepto,
           categoria: gasto.categoria,
           monto: gasto.monto,
+          fecha: gasto.fecha ? new Date(gasto.fecha).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10),
           diaVencimiento: gasto.diaVencimiento || new Date().getDate(),
           estado: gasto.estado || 'pendiente',
           nota: gasto.nota || '',
@@ -99,6 +101,7 @@ export function GastoDialog({ open, onOpenChange }: GastoDialogProps) {
         concepto: '',
         categoria: '',
         monto: undefined,
+        fecha: new Date().toISOString().slice(0, 10),
         diaVencimiento: new Date().getDate(),
         estado: 'pendiente',
         nota: '',
@@ -122,6 +125,7 @@ export function GastoDialog({ open, onOpenChange }: GastoDialogProps) {
           concepto: values.concepto,
           categoria: values.categoria,
           monto: values.monto,
+          fecha: values.fecha,
         }
         if (gastoEditandoId) {
           await updateVariable.mutateAsync({ id: gastoEditandoId, data: dataVar })
@@ -136,6 +140,7 @@ export function GastoDialog({ open, onOpenChange }: GastoDialogProps) {
           concepto: '',
           categoria: '',
           monto: '' as any,
+          fecha: new Date().toISOString().slice(0, 10),
           diaVencimiento: new Date().getDate(),
           estado: 'pendiente',
           nota: '',
@@ -296,6 +301,22 @@ export function GastoDialog({ open, onOpenChange }: GastoDialogProps) {
                       <SelectItem value="pagado">Pagado</SelectItem>
                     </SelectContent>
                   </Select>
+                </div>
+              </div>
+            )}
+
+            {/* Fecha (solo para gastos variables) */}
+            {gastoTipo === 'variable' && (
+              <div className="space-y-1.5">
+                <Label htmlFor="gasto-fecha" className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wide">Fecha</Label>
+                <div className="relative">
+                  <Calendar className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]" />
+                  <Input
+                    id="gasto-fecha"
+                    type="date"
+                    className="bg-[var(--muted)] border-[var(--border)] pl-10 h-11"
+                    {...form.register('fecha')}
+                  />
                 </div>
               </div>
             )}
