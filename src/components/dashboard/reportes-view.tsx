@@ -1,13 +1,12 @@
 'use client'
 
 import { useReportes } from '@/hooks/use-data'
-import { useAppStore, type ReporteWidgetId } from '@/store/app'
+import { useAppStore } from '@/store/app'
 import { Skeleton } from '@/components/ui/skeleton'
 import { motion } from 'framer-motion'
 import {
   ChartColumn, TrendingUp, TrendingDown, Search, Filter, Download,
-  ArrowUpRight, ArrowDownRight, Wallet, PiggyBank, AlertCircle, Calendar, X,
-  Settings2,
+  ArrowUpRight, ArrowDownRight, Wallet, PiggyBank, AlertCircle,
 } from 'lucide-react'
 import { formatCurrency, formatDate } from '@/lib/format'
 import {
@@ -34,7 +33,6 @@ import {
 import { Input } from '@/components/ui/input'
 import { MESES } from '@/lib/types'
 import { useFormatoMoneda } from '@/hooks/use-formato-moneda'
-import { ReportesCustomizer } from './reportes-customizer'
 
 type TipoFiltro = 'todos' | 'ingresos' | 'gastos'
 
@@ -47,15 +45,12 @@ export function ReportesView() {
   const { data, isLoading } = useReportes()
   const formato = useFormatoMoneda()
   const fc = (amount: number) => formatCurrency(amount, formato)
-  const { mes, anio, reporteWidgets } = useAppStore()
-  const [customizerOpen, setCustomizerOpen] = useState(false)
+  const { mes, anio } = useAppStore()
 
   // Estados de filtro
   const [busqueda, setBusqueda] = useState('')
   const [categoriaFiltro, setCategoriaFiltro] = useState<string>('todas')
   const [tipoFiltro, setTipoFiltro] = useState<TipoFiltro>('todos')
-  const [fechaDesde, setFechaDesde] = useState<string>('')
-  const [fechaHasta, setFechaHasta] = useState<string>('')
 
   // Filtrar movimientos
   const movimientosFiltrados = useMemo(() => {
@@ -68,16 +63,9 @@ export function ReportesView() {
       if (categoriaFiltro !== 'todas' && m.categoria !== categoriaFiltro) return false
       // Filtro por texto
       if (busqueda && !m.concepto.toLowerCase().includes(busqueda.toLowerCase())) return false
-      // Filtro por rango de fechas
-      if (fechaDesde || fechaHasta) {
-        const fechaMov = new Date(m.fecha)
-        if (isNaN(fechaMov.getTime())) return false
-        if (fechaDesde && fechaMov < new Date(fechaDesde + 'T00:00:00')) return false
-        if (fechaHasta && fechaMov > new Date(fechaHasta + 'T23:59:59')) return false
-      }
       return true
     })
-  }, [data, tipoFiltro, categoriaFiltro, busqueda, fechaDesde, fechaHasta])
+  }, [data, tipoFiltro, categoriaFiltro, busqueda])
 
   // Categorías únicas para el dropdown
   const categorias: string[] = useMemo(() => {
@@ -119,27 +107,10 @@ export function ReportesView() {
   const totalFiltradoIngresos = movimientosFiltrados.filter((m: any) => m.monto > 0).reduce((s: number, m: any) => s + m.monto, 0)
   const totalFiltradoGastos = movimientosFiltrados.filter((m: any) => m.monto < 0).reduce((s: number, m: any) => s + Math.abs(m.monto), 0)
 
-  // Widgets visibles según configuración del usuario
-  const sortedReporteWidgets = [...reporteWidgets].sort((a, b) => a.orden - b.orden)
-  const isVisible = (id: ReporteWidgetId) => sortedReporteWidgets.find((w) => w.id === id)?.visible ?? true
-
   return (
-    <>
-      {/* Header con botón de personalizar */}
-      <div className="flex items-center justify-end mb-2">
-        <button
-          onClick={() => setCustomizerOpen(true)}
-          className="px-3 py-1.5 rounded-xl glass hover:bg-white/[0.08] text-sm font-medium cursor-pointer transition-all flex items-center gap-2"
-        >
-          <Settings2 className="w-4 h-4" />
-          Personalizar
-        </button>
-      </div>
-
-      <div className="space-y-5">
-        {/* KPIs con comparativa */}
-        {isVisible('kpis') && (
-        <div className="grid grid-cols-12 gap-5">
+    <div className="space-y-5">
+      {/* KPIs con comparativa */}
+      <div className="grid grid-cols-12 gap-5">
         <KpiCard
           titulo="Ingresos"
           valor={resumen.totalIngresos}
@@ -170,13 +141,10 @@ export function ReportesView() {
           color="#f59e0b"
         />
       </div>
-        )}
 
       {/* Gráficos */}
-      {(isVisible('gastosCategoria') || isVisible('distribucion')) && (
       <div className="grid grid-cols-12 gap-5">
         {/* Gastos por categoría - Bar chart */}
-        {isVisible('gastosCategoria') && (
         <div className="col-span-12 lg:col-span-8 rounded-3xl p-6 glass">
           <div className="flex items-center gap-2 mb-4">
             <ChartColumn className="w-4 h-4 text-[var(--primary)]" />
@@ -219,10 +187,8 @@ export function ReportesView() {
             </ResponsiveContainer>
           )}
         </div>
-        )}
 
         {/* Distribución - Pie chart */}
-        {isVisible('distribucion') && (
         <div className="col-span-12 lg:col-span-4 rounded-3xl p-6 glass">
           <div className="flex items-center gap-2 mb-4">
             <Wallet className="w-4 h-4 text-[var(--chart-2)]" />
@@ -263,12 +229,9 @@ export function ReportesView() {
             </ResponsiveContainer>
           )}
         </div>
-        )}
       </div>
-      )}
 
       {/* Ingresos por categoría */}
-      {isVisible('ingresosCategoria') && (
       <div className="rounded-3xl p-6 glass">
         <div className="flex items-center gap-2 mb-4">
           <TrendingUp className="w-4 h-4 text-[var(--chart-3)]" />
@@ -299,10 +262,8 @@ export function ReportesView() {
           </div>
         )}
       </div>
-      )}
 
       {/* Buscador y filtros */}
-      {isVisible('movimientos') && (
       <div className="rounded-3xl p-6 glass">
         <div className="flex items-center gap-2 mb-4">
           <Search className="w-4 h-4 text-[var(--primary)]" />
@@ -363,49 +324,13 @@ export function ReportesView() {
             </SelectContent>
           </Select>
 
-          {/* Filtro por rango de fechas */}
-          <div className="flex items-center gap-2">
-            <div className="relative">
-              <Calendar className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)] z-10" />
-              <Input
-                type="date"
-                value={fechaDesde}
-                onChange={(e) => setFechaDesde(e.target.value)}
-                className="bg-[var(--muted)] border-[var(--border)] pl-10 w-[150px]"
-                title="Desde"
-              />
-            </div>
-            <span className="text-[var(--muted-foreground)] text-xs">→</span>
-            <div className="relative">
-              <Calendar className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)] z-10" />
-              <Input
-                type="date"
-                value={fechaHasta}
-                onChange={(e) => setFechaHasta(e.target.value)}
-                className="bg-[var(--muted)] border-[var(--border)] pl-10 w-[150px]"
-                title="Hasta"
-              />
-            </div>
-            {(fechaDesde || fechaHasta) && (
-              <button
-                onClick={() => { setFechaDesde(''); setFechaHasta('') }}
-                className="px-2 py-1 rounded-lg text-xs text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)] cursor-pointer transition-all"
-                title="Limpiar fechas"
-              >
-                <X className="w-3.5 h-3.5" />
-              </button>
-            )}
-          </div>
-
           {/* Limpiar filtros */}
-          {(busqueda || categoriaFiltro !== 'todas' || tipoFiltro !== 'todos' || fechaDesde || fechaHasta) && (
+          {(busqueda || categoriaFiltro !== 'todas' || tipoFiltro !== 'todos') && (
             <button
               onClick={() => {
                 setBusqueda('')
                 setCategoriaFiltro('todas')
                 setTipoFiltro('todos')
-                setFechaDesde('')
-                setFechaHasta('')
               }}
               className="px-3 py-2 rounded-lg text-xs text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)] cursor-pointer transition-all"
             >
@@ -489,11 +414,7 @@ export function ReportesView() {
           )}
         </div>
       </div>
-      )}
     </div>
-
-      <ReportesCustomizer open={customizerOpen} onOpenChange={setCustomizerOpen} />
-    </>
   )
 }
 

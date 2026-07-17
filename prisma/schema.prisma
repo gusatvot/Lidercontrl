@@ -31,6 +31,7 @@ model Usuario {
   gastosVariables  GastoVariable[]
   metasAhorro      MetaAhorro[]
   ingresos         Ingreso[]
+  categorias       Categoria[]
   mensajesEnviados Mensaje[]      @relation("MensajesRemitente")
   mensajesRecibidos Mensaje[]     @relation("MensajesDestinatario")
   transferenciasEnviadas    Transferencia[] @relation("TransfOrigen")
@@ -112,6 +113,22 @@ model Ingreso {
 
   @@index([usuarioId, mes, anio])
   @@index([categoria])
+}
+
+// ============= CATEGORÍAS PERSONALIZADAS =============
+
+model Categoria {
+  id          String   @id @default(cuid())
+  usuarioId   String
+  usuario     Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  nombre      String
+  tipo        String   // "gasto-fijo" | "gasto-variable" | "ingreso"
+  color       String   @default("#6366f1")
+  icono       String   @default("🏷️")
+  creadoEn    DateTime @default(now())
+
+  @@unique([usuarioId, nombre, tipo])
+  @@index([usuarioId, tipo])
 }
 
 model Mensaje {

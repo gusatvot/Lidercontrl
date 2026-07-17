@@ -707,3 +707,82 @@ export function useProcesarTransferencia() {
     onError: (e: any) => toast.error(e.message),
   })
 }
+
+// ============= CATEGORÍAS PERSONALIZADAS =============
+export function useCategorias(tipo?: 'gasto-fijo' | 'gasto-variable' | 'ingreso') {
+  return useQuery({
+    queryKey: ['categorias', tipo],
+    queryFn: async () => {
+      const url = tipo ? `/api/categorias?tipo=${tipo}` : '/api/categorias'
+      const res = await apiFetch(url)
+      if (!res.ok) throw new Error('Error cargando categorías')
+      return res.json()
+    },
+  })
+}
+
+export function useCrearCategoria() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async (data: { nombre: string; tipo: 'gasto-fijo' | 'gasto-variable' | 'ingreso'; color?: string; icono?: string }) => {
+      const res = await apiFetch('/api/categorias', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      })
+      if (!res.ok) {
+        const err = await res.json()
+        throw new Error(err.error || 'Error')
+      }
+      return res.json()
+    },
+    onSuccess: (_data, variables) => {
+      qc.invalidateQueries({ queryKey: ['categorias', variables.tipo] })
+      qc.invalidateQueries({ queryKey: ['categorias'] })
+      toast.success('Categoría creada')
+    },
+    onError: (e: any) => toast.error(e.message),
+  })
+}
+
+export function useUpdateCategoria() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: { nombre?: string; color?: string; icono?: string } }) => {
+      const res = await apiFetch(`/api/categorias/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      })
+      if (!res.ok) {
+        const err = await res.json()
+        throw new Error(err.error || 'Error')
+      }
+      return res.json()
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['categorias'] })
+      toast.success('Categoría actualizada')
+    },
+    onError: (e: any) => toast.error(e.message),
+  })
+}
+
+export function useDeleteCategoria() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const res = await apiFetch(`/api/categorias/${id}`, { method: 'DELETE' })
+      if (!res.ok) {
+        const err = await res.json()
+        throw new Error(err.error || 'Error')
+      }
+      return res.json()
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['categorias'] })
+      toast.success('Categoría eliminada')
+    },
+    onError: (e: any) => toast.error(e.message),
+  })
+}

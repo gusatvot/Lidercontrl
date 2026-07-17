@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
-import { User, Wallet, Palette, Users, Bell, Database, Info } from 'lucide-react'
+import { User, Wallet, Palette, Users, Bell, Database, Info, Tag } from 'lucide-react'
 import { PerfilTab } from './perfil-tab'
 import { CuentaTab } from './cuenta-tab'
 import { AparienciaTab } from './apariencia-tab'
@@ -11,14 +11,16 @@ import { FamiliaTab } from './familia-tab'
 import { NotificacionesTab } from './notificaciones-tab'
 import { DatosTab } from './datos-tab'
 import { AcercaDeTab } from './acerca-de-tab'
+import { CategoriasTab } from './categorias-tab'
 
-type Tab = 'perfil' | 'cuenta' | 'apariencia' | 'familia' | 'notificaciones' | 'datos' | 'acerca'
+type Tab = 'perfil' | 'cuenta' | 'apariencia' | 'familia' | 'categorias' | 'notificaciones' | 'datos' | 'acerca'
 
 const TABS: { id: Tab; label: string; icon: any }[] = [
   { id: 'perfil', label: 'Perfil', icon: User },
   { id: 'cuenta', label: 'Cuenta', icon: Wallet },
   { id: 'apariencia', label: 'Apariencia', icon: Palette },
   { id: 'familia', label: 'Familia', icon: Users },
+  { id: 'categorias', label: 'Categorías', icon: Tag },
   { id: 'notificaciones', label: 'Notificaciones', icon: Bell },
   { id: 'datos', label: 'Datos', icon: Database },
   { id: 'acerca', label: 'Acerca de', icon: Info },
@@ -70,6 +72,7 @@ export function AjustesView() {
             {tab === 'cuenta' && <CuentaTab />}
             {tab === 'apariencia' && <AparienciaTab />}
             {tab === 'familia' && <FamiliaTab />}
+            {tab === 'categorias' && <CategoriasTab />}
             {tab === 'notificaciones' && <NotificacionesTab />}
             {tab === 'datos' && <DatosTab />}
             {tab === 'acerca' && <AcercaDeTab />}

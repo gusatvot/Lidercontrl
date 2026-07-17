@@ -29,15 +29,12 @@ import {
   useUpdateGastoVariable,
   useGastosFijos,
   useGastosVariables,
+  useCategorias,
 } from '@/hooks/use-data'
 import {
   createGastoFijoSchema,
   createGastoVariableSchema,
 } from '@/lib/validations'
-import {
-  CATEGORIAS_GASTO_FIJO,
-  CATEGORIAS_GASTO_VARIABLE,
-} from '@/lib/types'
 import { Loader2, Repeat, Wallet, Tag, DollarSign, Calendar, FileText } from 'lucide-react'
 import { toast } from 'sonner'
 import { useEffect } from 'react'
@@ -57,7 +54,9 @@ export function GastoDialog({ open, onOpenChange }: GastoDialogProps) {
   const { data: gastosFijos } = useGastosFijos()
   const { data: gastosVariables } = useGastosVariables()
 
-  const categorias = gastoTipo === 'fijo' ? CATEGORIAS_GASTO_FIJO : CATEGORIAS_GASTO_VARIABLE
+  const categoriasTipo = gastoTipo === 'fijo' ? 'gasto-fijo' as const : 'gasto-variable' as const
+  const { data: categoriasData } = useCategorias(categoriasTipo)
+  const categorias = (categoriasData || []).map((c: any) => c.nombre)
 
   const form = useForm<any>({
     resolver: zodResolver(gastoTipo === 'fijo' ? createGastoFijoSchema : createGastoVariableSchema),
@@ -65,7 +64,6 @@ export function GastoDialog({ open, onOpenChange }: GastoDialogProps) {
       concepto: '',
       categoria: '',
       monto: undefined,
-      fecha: new Date().toISOString().slice(0, 10),
       diaVencimiento: new Date().getDate(),
       estado: 'pendiente',
       nota: '',
@@ -88,7 +86,6 @@ export function GastoDialog({ open, onOpenChange }: GastoDialogProps) {
           concepto: gasto.concepto,
           categoria: gasto.categoria,
           monto: gasto.monto,
-          fecha: gasto.fecha ? new Date(gasto.fecha).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10),
           diaVencimiento: gasto.diaVencimiento || new Date().getDate(),
           estado: gasto.estado || 'pendiente',
           nota: gasto.nota || '',
@@ -101,7 +98,6 @@ export function GastoDialog({ open, onOpenChange }: GastoDialogProps) {
         concepto: '',
         categoria: '',
         monto: undefined,
-        fecha: new Date().toISOString().slice(0, 10),
         diaVencimiento: new Date().getDate(),
         estado: 'pendiente',
         nota: '',
@@ -125,7 +121,6 @@ export function GastoDialog({ open, onOpenChange }: GastoDialogProps) {
           concepto: values.concepto,
           categoria: values.categoria,
           monto: values.monto,
-          fecha: values.fecha,
         }
         if (gastoEditandoId) {
           await updateVariable.mutateAsync({ id: gastoEditandoId, data: dataVar })
@@ -140,7 +135,6 @@ export function GastoDialog({ open, onOpenChange }: GastoDialogProps) {
           concepto: '',
           categoria: '',
           monto: '' as any,
-          fecha: new Date().toISOString().slice(0, 10),
           diaVencimiento: new Date().getDate(),
           estado: 'pendiente',
           nota: '',
@@ -301,22 +295,6 @@ export function GastoDialog({ open, onOpenChange }: GastoDialogProps) {
                       <SelectItem value="pagado">Pagado</SelectItem>
                     </SelectContent>
                   </Select>
-                </div>
-              </div>
-            )}
-
-            {/* Fecha (solo para gastos variables) */}
-            {gastoTipo === 'variable' && (
-              <div className="space-y-1.5">
-                <Label htmlFor="gasto-fecha" className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wide">Fecha</Label>
-                <div className="relative">
-                  <Calendar className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]" />
-                  <Input
-                    id="gasto-fecha"
-                    type="date"
-                    className="bg-[var(--muted)] border-[var(--border)] pl-10 h-11"
-                    {...form.register('fecha')}
-                  />
                 </div>
               </div>
             )}

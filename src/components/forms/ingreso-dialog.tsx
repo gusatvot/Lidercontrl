@@ -14,10 +14,9 @@ import {
 import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
 import { useAppStore } from '@/store/app'
-import { useCreateIngreso, useUpdateIngreso, useIngresos } from '@/hooks/use-data'
+import { useCreateIngreso, useUpdateIngreso, useIngresos, useCategorias } from '@/hooks/use-data'
 import { createIngresoSchema } from '@/lib/validations'
-import { CATEGORIAS_INGRESO } from '@/lib/types'
-import { Loader2, TrendingUp, Repeat, DollarSign, FileText, Calendar } from 'lucide-react'
+import { Loader2, TrendingUp, Repeat, DollarSign, FileText } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
 interface IngresoDialogProps {
@@ -31,6 +30,8 @@ export function IngresoDialog({ open, onOpenChange, editandoId }: IngresoDialogP
   const createIngreso = useCreateIngreso()
   const updateIngreso = useUpdateIngreso()
   const { data: ingresos } = useIngresos()
+  const { data: categoriasData } = useCategorias('ingreso')
+  const categorias = (categoriasData || []).map((c: any) => c.nombre)
   const [internalEditandoId, setInternalEditandoId] = useState<string | null>(null)
 
   const editId = editandoId || internalEditandoId
@@ -41,7 +42,6 @@ export function IngresoDialog({ open, onOpenChange, editandoId }: IngresoDialogP
       concepto: '',
       categoria: '',
       monto: undefined,
-      fecha: new Date().toISOString().slice(0, 10),
       esFijo: false,
       nota: '',
       mes,
@@ -57,7 +57,6 @@ export function IngresoDialog({ open, onOpenChange, editandoId }: IngresoDialogP
           concepto: ingreso.concepto,
           categoria: ingreso.categoria,
           monto: ingreso.monto,
-          fecha: ingreso.fecha ? new Date(ingreso.fecha).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10),
           esFijo: ingreso.esFijo,
           nota: ingreso.nota || '',
           mes,
@@ -70,7 +69,6 @@ export function IngresoDialog({ open, onOpenChange, editandoId }: IngresoDialogP
           concepto: '',
           categoria: '',
           monto: undefined,
-          fecha: new Date().toISOString().slice(0, 10),
           esFijo: false,
           nota: '',
           mes,
@@ -90,12 +88,12 @@ export function IngresoDialog({ open, onOpenChange, editandoId }: IngresoDialogP
       }
 
       if (continuar) {
+        // Resetear TODO el form para cargar otro ingreso desde cero
         Promise.resolve().then(() => {
           form.reset({
             concepto: '',
             categoria: '',
             monto: '' as any,
-            fecha: new Date().toISOString().slice(0, 10),
             esFijo: false,
             nota: '',
             mes,
@@ -110,11 +108,13 @@ export function IngresoDialog({ open, onOpenChange, editandoId }: IngresoDialogP
     }
   }
 
+  // Wrapper compatible con SubmitHandler<T> de React Hook Form.
   const handleSubmit = (values: any) => onSubmit(values, false)
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="bg-[var(--popover)] border-[var(--border)] max-w-md p-0 overflow-hidden">
+        {/* Header con gradiente */}
         <div className="px-6 pt-6 pb-4 bg-gradient-to-br from-[rgba(16,185,129,0.08)] to-[rgba(52,211,153,0.04)] border-b border-[var(--border)]">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-3 text-lg">
@@ -136,6 +136,7 @@ export function IngresoDialog({ open, onOpenChange, editandoId }: IngresoDialogP
 
         <form onSubmit={form.handleSubmit(handleSubmit)}>
           <div className="px-6 py-5 space-y-5">
+            {/* Concepto */}
             <div className="space-y-1.5">
               <Label htmlFor="ing-concepto" className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wide">Concepto</Label>
               <div className="relative">
@@ -152,6 +153,7 @@ export function IngresoDialog({ open, onOpenChange, editandoId }: IngresoDialogP
               )}
             </div>
 
+            {/* Categoría + Monto en grilla */}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <Label className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wide">Categoría</Label>
@@ -163,7 +165,7 @@ export function IngresoDialog({ open, onOpenChange, editandoId }: IngresoDialogP
                     <SelectValue placeholder="Elegir..." />
                   </SelectTrigger>
                   <SelectContent className="glass-strong border-[var(--border)]">
-                    {CATEGORIAS_INGRESO.map((cat) => (
+                    {categorias.map((cat) => (
                       <SelectItem key={cat} value={cat}>{cat}</SelectItem>
                     ))}
                   </SelectContent>
@@ -192,20 +194,7 @@ export function IngresoDialog({ open, onOpenChange, editandoId }: IngresoDialogP
               </div>
             </div>
 
-            {/* Fecha */}
-            <div className="space-y-1.5">
-              <Label htmlFor="ing-fecha" className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wide">Fecha</Label>
-              <div className="relative">
-                <Calendar className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]" />
-                <Input
-                  id="ing-fecha"
-                  type="date"
-                  className="bg-[var(--muted)] border-[var(--border)] pl-10 h-11"
-                  {...form.register('fecha')}
-                />
-              </div>
-            </div>
-
+            {/* Checkbox fijo */}
             <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-[var(--card)] border border-[var(--border)]">
               <Checkbox
                 id="ing-esFijo"
@@ -222,6 +211,7 @@ export function IngresoDialog({ open, onOpenChange, editandoId }: IngresoDialogP
               </div>
             </div>
 
+            {/* Descripción */}
             <div className="space-y-1.5">
               <Label htmlFor="ing-nota" className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wide">Descripción (opcional)</Label>
               <div className="relative">
@@ -237,6 +227,7 @@ export function IngresoDialog({ open, onOpenChange, editandoId }: IngresoDialogP
             </div>
           </div>
 
+          {/* Footer con botones */}
           <div className="px-6 py-4 border-t border-[var(--border)] bg-[var(--muted)]">
             <div className="flex gap-2">
               <Button
