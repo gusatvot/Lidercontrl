@@ -1,6 +1,6 @@
 'use client'
 
-import { useDashboard } from '@/hooks/use-data'
+import { useDashboard, useExportarCSV } from '@/hooks/use-data'
 import { useAppStore, type WidgetId } from '@/store/app'
 import { formatCurrency } from '@/lib/format'
 import { BentoSummary } from './bento-summary'

@@ -3,7 +3,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAppStore } from '@/store/app'
 import { toast } from 'sonner'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 // Helper para hacer fetch (la auth va por cookie de NextAuth automáticamente)
 async function apiFetch(url: string, options: RequestInit = {}) {
@@ -785,4 +785,47 @@ export function useDeleteCategoria() {
     },
     onError: (e: any) => toast.error(e.message),
   })
+}
+// ============= EXPORTAR CSV =============
+/**
+ * Hook para exportar todos los datos del usuario a CSV.
+ * Devuelve una función que al llamarla descarga el archivo.
+ */
+export function useExportarCSV() {
+  const [isExporting, setIsExporting] = useState(false)
+
+  const exportar = async () => {
+    try {
+      setIsExporting(true)
+      toast.info('Generando CSV...')
+
+      const res = await apiFetch('/api/export')
+      if (!res.ok) {
+        const err = await res.json()
+        throw new Error(err.error || 'Error exportando datos')
+      }
+
+      const blob = await res.blob()
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      const contentDisposition = res.headers.get('Content-Disposition')
+      const filenameMatch = contentDisposition?.match(/filename="?([^"]+)"?/)
+      const filename = filenameMatch?.[1] || `lidercontrol_${new Date().toISOString().slice(0, 10)}.csv`
+      a.download = filename
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      window.URL.revokeObjectURL(url)
+
+      toast.success('CSV descargado correctamente')
+    } catch (e: any) {
+      console.error('[useExportarCSV]', e)
+      toast.error(e.message || 'Error al exportar')
+    } finally {
+      setIsExporting(false)
+    }
+  }
+
+  return { exportar, isExporting }
 }

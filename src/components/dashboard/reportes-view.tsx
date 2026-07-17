@@ -1,12 +1,12 @@
 'use client'
 
-import { useReportes } from '@/hooks/use-data'
+import { useReportes, useExportarCSV } from '@/hooks/use-data'
 import { useAppStore } from '@/store/app'
 import { Skeleton } from '@/components/ui/skeleton'
 import { motion } from 'framer-motion'
 import {
   ChartColumn, TrendingUp, TrendingDown, Search, Filter, Download,
-  ArrowUpRight, ArrowDownRight, Wallet, PiggyBank, AlertCircle,
+  ArrowUpRight, ArrowDownRight, Wallet, PiggyBank, AlertCircle, Loader2,
 } from 'lucide-react'
 import { formatCurrency, formatDate } from '@/lib/format'
 import {
@@ -43,6 +43,7 @@ const COLORES_CATEGORIAS = [
 
 export function ReportesView() {
   const { data, isLoading } = useReportes()
+  const { exportar, isExporting } = useExportarCSV()
   const formato = useFormatoMoneda()
   const fc = (amount: number) => formatCurrency(amount, formato)
   const { mes, anio } = useAppStore()
@@ -268,9 +269,22 @@ export function ReportesView() {
         <div className="flex items-center gap-2 mb-4">
           <Search className="w-4 h-4 text-[var(--primary)]" />
           <div className="text-base font-semibold">Movimientos del mes</div>
-          <span className="text-xs text-[var(--muted-foreground)] ml-auto">
+          <span className="text-xs text-[var(--muted-foreground)] ml-2">
             {movimientosFiltrados.length} de {data?.movimientos?.length || 0} movimientos
           </span>
+          <button
+            onClick={exportar}
+            disabled={isExporting}
+            className="ml-auto px-3 py-1.5 rounded-xl bg-gradient-to-br from-[#10b981] to-[#34d399] text-white text-sm font-semibold cursor-pointer hover:from-[#10b981]/80 hover:to-[#34d399]/80 transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            title="Exportar todos los datos a CSV"
+          >
+            {isExporting ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Download className="w-4 h-4" />
+            )}
+            <span className="hidden sm:inline">{isExporting ? 'Exportando...' : 'Exportar CSV'}</span>
+          </button>
         </div>
 
         {/* Barra de filtros */}
