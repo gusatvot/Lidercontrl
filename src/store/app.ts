@@ -38,13 +38,14 @@ export interface PreferenciasApariencia {
 }
 
 export interface PreferenciasFinanzas {
-  diaCorte: number // 1-28
-  reglaNecesidades: number // %
-  reglaDeseos: number // %
-  reglaAhorros: number // %
-  recordatorioDias: number // días antes del vencimiento
+  diaCorte: number
+  reglaNecesidades: number
+  reglaDeseos: number
+  reglaAhorros: number
+  recordatorioDias: number
 }
 
+// Widgets del Dashboard
 export type WidgetId =
   | 'bento'
   | 'insights'
@@ -59,12 +60,24 @@ export interface WidgetConfig {
   orden: number
 }
 
+// Widgets de la vista de Reportes
+export type ReporteWidgetId =
+  | 'kpis'
+  | 'gastosCategoria'
+  | 'distribucion'
+  | 'ingresosCategoria'
+  | 'movimientos'
+
+export interface ReporteWidgetConfig {
+  id: ReporteWidgetId
+  visible: boolean
+  orden: number
+}
+
 interface AppState {
-  // Navegación
   seccion: Seccion
   setSeccion: (s: Seccion) => void
 
-  // Mes seleccionado
   mes: number
   anio: number
   setMesAnio: (mes: number, anio: number) => void
@@ -72,17 +85,14 @@ interface AppState {
   mesSiguiente: () => void
   initMesActual: () => void
 
-  // Usuario activo (mock)
   usuarioActivoId: string | null
   usuarioActivoNombre: string
   usuarioActivoColor: string
   setUsuarioActivo: (u: { id: string; nombre: string; color: string }) => void
 
-  // Chat - contacto seleccionado
   contactoActivoId: string | null
   setContactoActivo: (id: string | null) => void
 
-  // Modales
   gastoDialogOpen: boolean
   gastoEditandoId: string | null
   gastoTipo: 'fijo' | 'variable'
@@ -96,10 +106,10 @@ interface AppState {
   cmdkOpen: boolean
   setCmdkOpen: (open: boolean) => void
 
-  // Preferencias
   apariencia: PreferenciasApariencia
   notificaciones: PreferenciasNotificaciones
   finanzas: PreferenciasFinanzas
+
   widgets: WidgetConfig[]
   setApariencia: (a: Partial<PreferenciasApariencia>) => void
   setNotificaciones: (n: Partial<PreferenciasNotificaciones>) => void
@@ -108,7 +118,11 @@ interface AppState {
   reorderWidgets: (widgets: WidgetConfig[]) => void
   resetWidgets: () => void
 
-  // Hydration flag
+  reporteWidgets: ReporteWidgetConfig[]
+  toggleReporteWidget: (id: ReporteWidgetId) => void
+  reorderReporteWidgets: (widgets: ReporteWidgetConfig[]) => void
+  resetReporteWidgets: () => void
+
   _hydrated: boolean
   setHydrated: () => void
 }
@@ -135,8 +149,6 @@ export const useAppStore = create<AppState>()(
       seccion: 'dashboard',
       setSeccion: (s) => set({ seccion: s }),
 
-      // Inicializa con la fecha real (mes y año actuales)
-      // Nota: como esto corre en el cliente, no hay hydration mismatch
       mes: typeof window !== 'undefined' ? new Date().getMonth() + 1 : 1,
       anio: typeof window !== 'undefined' ? new Date().getFullYear() : 2026,
       setMesAnio: (mes, anio) => set({ mes, anio }),
@@ -182,7 +194,6 @@ export const useAppStore = create<AppState>()(
       cmdkOpen: false,
       setCmdkOpen: (open) => set({ cmdkOpen: open }),
 
-      // Preferencias (con defaults)
       apariencia: {
         tema: 'oscuro-premium',
         colorAcento: 'indigo',
@@ -209,7 +220,6 @@ export const useAppStore = create<AppState>()(
       setNotificaciones: (n) => set((s) => ({ notificaciones: { ...s.notificaciones, ...n } })),
       setFinanzas: (f) => set((s) => ({ finanzas: { ...s.finanzas, ...f } })),
 
-      // Widgets del dashboard (configurables por el usuario)
       widgets: [
         { id: 'bento', visible: true, orden: 0 },
         { id: 'insights', visible: true, orden: 1 },
@@ -233,6 +243,27 @@ export const useAppStore = create<AppState>()(
         ],
       }),
 
+      reporteWidgets: [
+        { id: 'kpis', visible: true, orden: 0 },
+        { id: 'gastosCategoria', visible: true, orden: 1 },
+        { id: 'distribucion', visible: true, orden: 2 },
+        { id: 'ingresosCategoria', visible: true, orden: 3 },
+        { id: 'movimientos', visible: true, orden: 4 },
+      ],
+      toggleReporteWidget: (id) => set((s) => ({
+        reporteWidgets: s.reporteWidgets.map((w) => w.id === id ? { ...w, visible: !w.visible } : w),
+      })),
+      reorderReporteWidgets: (newWidgets) => set({ reporteWidgets: newWidgets }),
+      resetReporteWidgets: () => set({
+        reporteWidgets: [
+          { id: 'kpis', visible: true, orden: 0 },
+          { id: 'gastosCategoria', visible: true, orden: 1 },
+          { id: 'distribucion', visible: true, orden: 2 },
+          { id: 'ingresosCategoria', visible: true, orden: 3 },
+          { id: 'movimientos', visible: true, orden: 4 },
+        ],
+      }),
+
       _hydrated: false,
       setHydrated: () => set({ _hydrated: true }),
     }),
@@ -244,11 +275,11 @@ export const useAppStore = create<AppState>()(
         usuarioActivoId: state.usuarioActivoId,
         usuarioActivoNombre: state.usuarioActivoNombre,
         usuarioActivoColor: state.usuarioActivoColor,
-        // No persistir 'seccion' para que después del login siempre arranque en dashboard
         apariencia: state.apariencia,
         notificaciones: state.notificaciones,
         finanzas: state.finanzas,
         widgets: state.widgets,
+        reporteWidgets: state.reporteWidgets,
       }),
       onRehydrateStorage: () => (state) => {
         state?.setHydrated()
