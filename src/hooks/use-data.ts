@@ -829,3 +829,228 @@ export function useExportarCSV() {
 
   return { exportar, isExporting }
 }
+// ============= EXPORTAR PDF =============
+/**
+ * Hook para exportar todos los datos del usuario a PDF.
+ * Genera el PDF en el navegador con jsPDF + autotable.
+ */
+export function useExportarPDF() {
+  const [isExporting, setIsExporting] = useState(false)
+
+  const exportar = async () => {
+    try {
+      setIsExporting(true)
+      toast.info('Generando PDF...')
+
+      // Traer todos los datos del dashboard (ya tiene todo lo necesario)
+      const res = await apiFetch('/api/dashboard?mes=' + useAppStore.getState().mes + '&anio=' + useAppStore.getState().anio)
+      if (!res.ok) throw new Error('Error cargando datos')
+      const data = await res.json()
+
+      // Import dinámico para no cargar jsPDF hasta que se use
+      const { jsPDF } = await import('jspdf')
+      const autoTable = (await import('jspdf-autotable')).default
+
+      const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
+      const pageWidth = doc.internal.pageSize.getWidth()
+      let y = 20
+
+      // ===== HEADER =====
+      doc.setFillColor(99, 102, 241)
+      doc.rect(0, 0, pageWidth, 25, 'F')
+      doc.setTextColor(255, 255, 255)
+      doc.setFontSize(18)
+      doc.setFont('helvetica', 'bold')
+      doc.text('LiderControl', 14, 12)
+      doc.setFontSize(10)
+      doc.setFont('helvetica', 'normal')
+      doc.text(`Reporte financiero - ${data.usuario.nombre}`, 14, 18)
+      doc.text(`Periodo: ${data.mes}/${data.anio}`, pageWidth - 50, 18)
+      doc.text(`Generado: ${new Date().toLocaleString('es-AR')}`, pageWidth - 50, 12)
+
+      y = 35
+      doc.setTextColor(0, 0, 0)
+
+      // ===== RESUMEN =====
+      doc.setFontSize(14)
+      doc.setFont('helvetica', 'bold')
+      doc.text('Resumen del periodo', 14, y)
+      y += 5
+
+      autoTable(doc, {
+        startY: y,
+        head: [['Concepto', 'Monto']],
+        body: [
+          ['Ingreso total', `$${data.resumen.ingresoTotal.toLocaleString('es-AR')}`],
+          ['Gastos fijos', `$${data.resumen.totalGastosFijos.toLocaleString('es-AR')}`],
+          ['Gastos variables', `$${data.resumen.totalGastosVariables.toLocaleString('es-AR')}`],
+          ['Ahorros', `$${data.resumen.totalAhorros.toLocaleString('es-AR')}`],
+          ['Saldo', `$${(data.resumen.ingresoTotal - data.resumen.totalGastosFijos - data.resumen.totalGastosVariables).toLocaleString('es-AR')}`],
+        ],
+        theme: 'striped',
+        headStyles: { fillColor: [99, 102, 241], textColor: 255, fontStyle: 'bold' },
+        bodyStyles: { textColor: 50 },
+        alternateRowStyles: { fillColor: [245, 245, 250] },
+        margin: { left: 14, right: 14 },
+      })
+
+      y = (doc as any).lastAutoTable.finalY + 10
+
+      // ===== INGRESOS =====
+      doc.setFontSize(14)
+      doc.setFont('helvetica', 'bold')
+      doc.text('Ingresos', 14, y)
+      y += 5
+
+      if (data.ingresos && data.ingresos.length > 0) {
+        autoTable(doc, {
+          startY: y,
+          head: [['Fecha', 'Concepto', 'Categoría', 'Monto', 'Tipo']],
+          body: data.ingresos.map((i: any) => [
+            new Date(i.fecha).toLocaleDateString('es-AR'),
+            i.concepto,
+            i.categoria,
+            `+$${i.monto.toLocaleString('es-AR')}`,
+            i.esFijo ? 'Fijo' : 'Extra',
+          ]),
+          theme: 'striped',
+          headStyles: { fillColor: [16, 185, 129], textColor: 255, fontStyle: 'bold' },
+          bodyStyles: { textColor: 50 },
+          alternateRowStyles: { fillColor: [240, 253, 244] },
+          margin: { left: 14, right: 14 },
+        })
+        y = (doc as any).lastAutoTable.finalY + 10
+      } else {
+        doc.setFont('helvetica', 'normal')
+        doc.setFontSize(10)
+        doc.text('Sin ingresos en este periodo', 14, y)
+        y += 8
+      }
+
+      // ===== GASTOS FIJOS =====
+      doc.setFontSize(14)
+      doc.setFont('helvetica', 'bold')
+      doc.text('Gastos Fijos', 14, y)
+      y += 5
+
+      if (data.gastosFijos && data.gastosFijos.length > 0) {
+        autoTable(doc, {
+          startY: y,
+          head: [['Concepto', 'Categoría', 'Monto', 'Vence', 'Estado']],
+          body: data.gastosFijos.map((g: any) => [
+            g.concepto,
+            g.categoria,
+            `-$${g.monto.toLocaleString('es-AR')}`,
+            `Día ${g.diaVencimiento}`,
+            g.estado === 'pagado' ? '✓ Pagado' : 'Pendiente',
+          ]),
+          theme: 'striped',
+          headStyles: { fillColor: [99, 102, 241], textColor: 255, fontStyle: 'bold' },
+          bodyStyles: { textColor: 50 },
+          alternateRowStyles: { fillColor: [238, 242, 255] },
+          margin: { left: 14, right: 14 },
+        })
+        y = (doc as any).lastAutoTable.finalY + 10
+      } else {
+        doc.setFont('helvetica', 'normal')
+        doc.setFontSize(10)
+        doc.text('Sin gastos fijos en este periodo', 14, y)
+        y += 8
+      }
+
+      // ===== GASTOS VARIABLES =====
+      if (y > 240) {
+        doc.addPage()
+        y = 20
+      }
+
+      doc.setFontSize(14)
+      doc.setFont('helvetica', 'bold')
+      doc.text('Gastos Variables', 14, y)
+      y += 5
+
+      if (data.gastosVariables && data.gastosVariables.length > 0) {
+        autoTable(doc, {
+          startY: y,
+          head: [['Fecha', 'Concepto', 'Categoría', 'Monto']],
+          body: data.gastosVariables.map((g: any) => [
+            new Date(g.fecha).toLocaleDateString('es-AR'),
+            g.concepto,
+            g.categoria,
+            `-$${g.monto.toLocaleString('es-AR')}`,
+          ]),
+          theme: 'striped',
+          headStyles: { fillColor: [245, 158, 11], textColor: 255, fontStyle: 'bold' },
+          bodyStyles: { textColor: 50 },
+          alternateRowStyles: { fillColor: [255, 251, 235] },
+          margin: { left: 14, right: 14 },
+        })
+        y = (doc as any).lastAutoTable.finalY + 10
+      } else {
+        doc.setFont('helvetica', 'normal')
+        doc.setFontSize(10)
+        doc.text('Sin gastos variables en este periodo', 14, y)
+        y += 8
+      }
+
+      // ===== METAS DE AHORRO =====
+      if (y > 240) {
+        doc.addPage()
+        y = 20
+      }
+
+      doc.setFontSize(14)
+      doc.setFont('helvetica', 'bold')
+      doc.text('Metas de Ahorro', 14, y)
+      y += 5
+
+      if (data.metas && data.metas.length > 0) {
+        autoTable(doc, {
+          startY: y,
+          head: [['Meta', 'Actual', 'Objetivo', 'Progreso']],
+          body: data.metas.map((m: any) => [
+            m.titulo,
+            `$${m.montoActual.toLocaleString('es-AR')}`,
+            `$${m.montoObjetivo.toLocaleString('es-AR')}`,
+            `${Math.min(100, (m.montoActual / m.montoObjetivo * 100)).toFixed(0)}%`,
+          ]),
+          theme: 'striped',
+          headStyles: { fillColor: [16, 185, 129], textColor: 255, fontStyle: 'bold' },
+          bodyStyles: { textColor: 50 },
+          alternateRowStyles: { fillColor: [240, 253, 244] },
+          margin: { left: 14, right: 14 },
+        })
+      } else {
+        doc.setFont('helvetica', 'normal')
+        doc.setFontSize(10)
+        doc.text('Sin metas de ahorro en este periodo', 14, y)
+      }
+
+      // ===== FOOTER en cada página =====
+      const pageCount = doc.getNumberOfPages()
+      for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i)
+        doc.setFontSize(8)
+        doc.setTextColor(150, 150, 150)
+        doc.setFont('helvetica', 'normal')
+        doc.text(
+          `LiderControl - Reporte de ${data.usuario.nombre} - Pagina ${i} de ${pageCount}`,
+          14,
+          doc.internal.pageSize.getHeight() - 10
+        )
+      }
+
+      // Guardar
+      const filename = `lidercontrol_${data.usuario.nombre}_${data.mes}-${data.anio}.pdf`
+      doc.save(filename)
+      toast.success('PDF descargado correctamente')
+    } catch (e: any) {
+      console.error('[useExportarPDF]', e)
+      toast.error(e.message || 'Error al exportar PDF')
+    } finally {
+      setIsExporting(false)
+    }
+  }
+
+  return { exportar, isExporting }
+}

@@ -1,12 +1,13 @@
 'use client'
 
-import { useReportes, useExportarCSV } from '@/hooks/use-data'
+import { useReportes, useExportarCSV, useExportarPDF } from '@/hooks/use-data'
 import { useAppStore } from '@/store/app'
 import { Skeleton } from '@/components/ui/skeleton'
 import { motion } from 'framer-motion'
 import {
   ChartColumn, TrendingUp, TrendingDown, Search, Filter, Download,
   ArrowUpRight, ArrowDownRight, Wallet, PiggyBank, AlertCircle, Loader2,
+  FileText, FileSpreadsheet, ChevronDown,
 } from 'lucide-react'
 import { formatCurrency, formatDate } from '@/lib/format'
 import {
@@ -43,8 +44,12 @@ const COLORES_CATEGORIAS = [
 
 export function ReportesView() {
   const { data, isLoading } = useReportes()
-  const { exportar, isExporting } = useExportarCSV()
+  const { exportar: exportarCSV, isExporting: isExportingCSV } = useExportarCSV()
+  const { exportar: exportarPDF, isExporting: isExportingPDF } = useExportarPDF()
+  const [exportMenuOpen, setExportMenuOpen] = useState(false)
   const formato = useFormatoMoneda()
+
+  const isExporting = isExportingCSV || isExportingPDF
   const fc = (amount: number) => formatCurrency(amount, formato)
   const { mes, anio } = useAppStore()
 
@@ -272,19 +277,68 @@ export function ReportesView() {
           <span className="text-xs text-[var(--muted-foreground)] ml-2">
             {movimientosFiltrados.length} de {data?.movimientos?.length || 0} movimientos
           </span>
-          <button
-            onClick={exportar}
-            disabled={isExporting}
-            className="ml-auto px-3 py-1.5 rounded-xl bg-gradient-to-br from-[#10b981] to-[#34d399] text-white text-sm font-semibold cursor-pointer hover:from-[#10b981]/80 hover:to-[#34d399]/80 transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-            title="Exportar todos los datos a CSV"
-          >
-            {isExporting ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <Download className="w-4 h-4" />
+          <div className="ml-auto relative">
+            <button
+              onClick={() => setExportMenuOpen(!exportMenuOpen)}
+              disabled={isExporting}
+              className="px-3 py-1.5 rounded-xl bg-gradient-to-br from-[#10b981] to-[#34d399] text-white text-sm font-semibold cursor-pointer hover:from-[#10b981]/80 hover:to-[#34d399]/80 transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isExporting ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Download className="w-4 h-4" />
+              )}
+              <span className="hidden sm:inline">{isExporting ? 'Exportando...' : 'Exportar'}</span>
+              <ChevronDown className="w-3 h-3" />
+            </button>
+
+            {exportMenuOpen && !isExporting && (
+              <>
+                {/* Overlay para cerrar al hacer click fuera */}
+                <div
+                  className="fixed inset-0 z-40"
+                  onClick={() => setExportMenuOpen(false)}
+                />
+
+                {/* Menu dropdown */}
+                <div className="absolute right-0 mt-2 w-56 rounded-2xl glass-strong border border-[var(--border)] shadow-2xl z-50 overflow-hidden">
+                  <button
+                    onClick={() => {
+                      setExportMenuOpen(false)
+                      exportarPDF()
+                    }}
+                    className="w-full px-4 py-3 flex items-center gap-3 hover:bg-[var(--secondary)] cursor-pointer transition-all text-left"
+                  >
+                    <div className="w-8 h-8 rounded-lg bg-[rgba(244,63,94,0.15)] flex items-center justify-center">
+                      <FileText className="w-4 h-4 text-[#f43f5e]" />
+                    </div>
+                    <div>
+                      <div className="text-sm font-semibold">Exportar como PDF</div>
+                      <div className="text-xs text-[var(--muted-foreground)]">Reporte formateado para imprimir</div>
+                    </div>
+                  </button>
+
+                  <div className="border-t border-[var(--border)]" />
+
+                  <button
+                    onClick={() => {
+                      setExportMenuOpen(false)
+                      exportarCSV()
+                    }}
+                    className="w-full px-4 py-3 flex items-center gap-3 hover:bg-[var(--secondary)] cursor-pointer transition-all text-left"
+                  >
+                    <div className="w-8 h-8 rounded-lg bg-[rgba(16,185,129,0.15)] flex items-center justify-center">
+                      <FileSpreadsheet className="w-4 h-4 text-[#10b981]" />
+                    </div>
+                    <div>
+                      <div className="text-sm font-semibold">Exportar como CSV</div>
+                      <div className="text-xs text-[var(--muted-foreground)]">Datos crudos para Excel/Sheets</div>
+                    </div>
+                  </button>
+                </div>
+              </>
             )}
-            <span className="hidden sm:inline">{isExporting ? 'Exportando...' : 'Exportar CSV'}</span>
-          </button>
+          </div>
         </div>
 
         {/* Barra de filtros */}
