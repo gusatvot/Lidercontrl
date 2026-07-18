@@ -63,6 +63,7 @@ model GastoFijo {
   nota         String?
   creadoEn     DateTime @default(now())
   actualizadoEn DateTime @updatedAt
+  ultimaNotificacionEn DateTime?
 
   @@index([usuarioId, mes, anio])
   @@index([estado])
