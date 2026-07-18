@@ -13,10 +13,10 @@ const MESES = [
 
 export function Header({ onAbrirCmdk }: { onAbrirCmdk?: () => void }) {
   const { mes, anio, mesAnterior, mesSiguiente, usuarioActivoNombre } = useAppStore()
-  const { data: sessionData } = useSessionActiva()
+  const { session } = useSessionActiva()
   const [notifOpen, setNotifOpen] = useState(false)
 
-  const usuario = sessionData?.usuario
+  const usuario = session?.user
   const saludo = () => {
     const h = new Date().getHours()
     if (h < 12) return 'Buenos días'
