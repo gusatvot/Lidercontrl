@@ -15,6 +15,7 @@ const TEMAS_VALIDOS = [
   'candy-pastel',
   'classic-gold',
   'aurora',
+  'neo-finance',
 ]
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {

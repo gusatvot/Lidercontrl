@@ -26,6 +26,7 @@ export type Tema =
   | 'candy-pastel'
   | 'classic-gold'
   | 'aurora'
+  | 'neo-finance'
 export type ColorAcento = 'indigo' | 'violeta' | 'esmeralda' | 'rosa' | 'ambar'
 export type Densidad = 'comoda' | 'compacta'
 export type FormatoMoneda = 'completo' | 'compacto' | 'decimales'

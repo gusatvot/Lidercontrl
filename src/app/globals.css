@@ -554,6 +554,97 @@
   --bg-solid: #050516;
 }
 
+/* ============================================
+   TEMA 12: Neo Finance
+   Inspirado en apps fintech - verde neón sobre negro
+   ============================================ */
+[data-theme="neo-finance"] {
+  --radius: 1rem;
+
+  --background: #121212;
+  --foreground: #ffffff;
+
+  --card: #1e1e1e;
+  --card-foreground: #ffffff;
+
+  --popover: #1a1a1a;
+  --popover-foreground: #ffffff;
+
+  --primary: #00ffa3;
+  --primary-foreground: #121212;
+
+  --secondary: #252525;
+  --secondary-foreground: #ffffff;
+
+  --muted: #1e1e1e;
+  --muted-foreground: #b0b0b0;
+
+  --accent: rgba(0, 255, 163, 0.15);
+  --accent-foreground: #00ffa3;
+
+  --destructive: #ff3366;
+  --destructive-foreground: #ffffff;
+
+  --border: rgba(255, 255, 255, 0.06);
+  --input: #252525;
+  --ring: #00ffa3;
+
+  --chart-1: #00ffa3;
+  --chart-2: #00a3ff;
+  --chart-3: #ff3366;
+  --chart-4: #00ffaa;
+  --chart-5: #ffcc00;
+
+  --sidebar: #0f0f0f;
+  --sidebar-foreground: #ffffff;
+  --sidebar-primary: #00ffa3;
+  --sidebar-primary-foreground: #121212;
+  --sidebar-accent: rgba(0, 255, 163, 0.1);
+  --sidebar-accent-foreground: #00ffa3;
+  --sidebar-border: rgba(255, 255, 255, 0.04);
+  --sidebar-ring: #00ffa3;
+
+  --bg-gradient-1: rgba(0, 255, 163, 0.08);
+  --bg-gradient-2: rgba(0, 163, 255, 0.05);
+  --bg-solid: #121212;
+}
+
+/* Efectos especiales solo para Neo Finance */
+[data-theme="neo-finance"] .glass {
+  background: #1e1e1e !important;
+  backdrop-filter: blur(10px);
+}
+
+[data-theme="neo-finance"] .glass-strong {
+  background: #252525 !important;
+  backdrop-filter: blur(20px);
+}
+
+/* Brillo verde en botones primarios */
+[data-theme="neo-finance"] button[class*="from-[var(--primary)]"] {
+  box-shadow: 0 0 20px rgba(0, 255, 163, 0.3);
+}
+
+[data-theme="neo-finance"] button[class*="from-[var(--primary)]"]:hover {
+  box-shadow: 0 0 30px rgba(0, 255, 163, 0.5);
+}
+
+/* Bordes verde neón en items activos del sidebar */
+[data-theme="neo-finance"] button[class*="from-[rgba(99,102,241"] {
+  background: rgba(0, 255, 163, 0.15) !important;
+  box-shadow: inset 0 0 0 1px rgba(0, 255, 163, 0.4);
+}
+
+/* Scrollbar con estilo neón */
+[data-theme="neo-finance"] ::-webkit-scrollbar-thumb {
+  background: rgba(0, 255, 163, 0.3);
+  border-radius: 4px;
+}
+
+[data-theme="neo-finance"] ::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 255, 163, 0.5);
+}
+
 /* .dark ya no se usa - los temas se controlan con data-theme */
 
 * {

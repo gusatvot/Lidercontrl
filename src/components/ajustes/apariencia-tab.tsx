@@ -25,6 +25,7 @@ export function AparienciaTab() {
     { id: 'candy-pastel', label: 'Candy Pastel', descripcion: 'Pasteles suaves rosa y lila', colores: ['#fef3f7', '#ec4899', '#a855f7'] },
     { id: 'classic-gold', label: 'Classic Gold', descripcion: 'Negro elegante con dorado', colores: ['#0a0a0a', '#eab308', '#fbbf24'] },
     { id: 'aurora', label: 'Aurora', descripcion: 'Multicolor con gradientes vibrantes', colores: ['#050516', '#8b5cf6', '#ec4899'] },
+    { id: 'neo-finance', label: 'Neo Finance', descripcion: 'Verde neón sobre negro estilo fintech', colores: ['#121212', '#00ffa3', '#00a3ff'] },
   ]
 
   const densidades: { id: Densidad; label: string; descripcion: string }[] = [
