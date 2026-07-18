@@ -64,6 +64,8 @@ export function GastoDialog({ open, onOpenChange }: GastoDialogProps) {
       concepto: '',
       categoria: '',
       monto: undefined,
+      fecha: new Date().toISOString().slice(0, 10),
+      fechaVencimiento: new Date().toISOString().slice(0, 10),
       diaVencimiento: new Date().getDate(),
       estado: 'pendiente',
       nota: '',
@@ -86,6 +88,10 @@ export function GastoDialog({ open, onOpenChange }: GastoDialogProps) {
           concepto: gasto.concepto,
           categoria: gasto.categoria,
           monto: gasto.monto,
+          fecha: gasto.fecha ? new Date(gasto.fecha).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10),
+          fechaVencimiento: gasto.diaVencimiento
+            ? new Date(gasto.anio, gasto.mes - 1, gasto.diaVencimiento).toISOString().slice(0, 10)
+            : new Date().toISOString().slice(0, 10),
           diaVencimiento: gasto.diaVencimiento || new Date().getDate(),
           estado: gasto.estado || 'pendiente',
           nota: gasto.nota || '',
@@ -98,6 +104,8 @@ export function GastoDialog({ open, onOpenChange }: GastoDialogProps) {
         concepto: '',
         categoria: '',
         monto: undefined,
+        fecha: new Date().toISOString().slice(0, 10),
+        fechaVencimiento: new Date().toISOString().slice(0, 10),
         diaVencimiento: new Date().getDate(),
         estado: 'pendiente',
         nota: '',
@@ -135,6 +143,8 @@ export function GastoDialog({ open, onOpenChange }: GastoDialogProps) {
           concepto: '',
           categoria: '',
           monto: '' as any,
+          fecha: new Date().toISOString().slice(0, 10),
+          fechaVencimiento: new Date().toISOString().slice(0, 10),
           diaVencimiento: new Date().getDate(),
           estado: 'pendiente',
           nota: '',
@@ -263,21 +273,26 @@ export function GastoDialog({ open, onOpenChange }: GastoDialogProps) {
               </div>
             )}
 
-            {/* Gasto fijo: día de vencimiento + estado */}
+            {/* Gasto fijo: fecha de vencimiento + estado */}
             {gastoTipo === 'fijo' && (
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <Label htmlFor="diaVencimiento" className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wide">Vencimiento</Label>
+                  <Label htmlFor="fechaVencimiento" className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wide">Fecha de vencimiento</Label>
                   <div className="relative">
                     <Calendar className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]" />
                     <Input
-                      id="diaVencimiento"
-                      type="number"
-                      min={1}
-                      max={31}
-                      placeholder="Día"
-                      className="bg-[var(--muted)] border-[var(--border)] pl-10 h-11 tabular"
-                      {...form.register('diaVencimiento', { valueAsNumber: true })}
+                      id="fechaVencimiento"
+                      type="date"
+                      className="bg-[var(--muted)] border-[var(--border)] pl-10 h-11"
+                      {...form.register('fechaVencimiento')}
+                      onChange={(e) => {
+                        form.setValue('fechaVencimiento', e.target.value)
+                        // Auto-calcular dia/mes/anio desde la fecha
+                        if (e.target.value) {
+                          const fecha = new Date(e.target.value)
+                          form.setValue('diaVencimiento', fecha.getDate(), { shouldValidate: false })
+                        }
+                      }}
                     />
                   </div>
                 </div>
@@ -352,3 +367,4 @@ export function GastoDialog({ open, onOpenChange }: GastoDialogProps) {
     </Dialog>
   )
 }
+  
