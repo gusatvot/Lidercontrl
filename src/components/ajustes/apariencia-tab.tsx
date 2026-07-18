@@ -14,9 +14,17 @@ export function AparienciaTab() {
   const { apariencia, setApariencia } = useAppStore()
 
   const temas: { id: Tema; label: string; descripcion: string; colores: string[] }[] = [
-    { id: 'oscuro-premium', label: 'Oscuro Premium', descripcion: 'Negro profundo con acentos índigo y violeta', colores: ['#070708', '#6366f1', '#8b5cf6'] },
-    { id: 'claro-minimalista', label: 'Claro Minimalista', descripcion: 'Blanco limpio con acentos esmeralda', colores: ['#f8f9fa', '#10b981', '#34d399'] },
-    { id: 'neon-futurista', label: 'Neón Futurista', descripcion: 'Azul marino con neón cyan y eléctrico', colores: ['#0a0e27', '#00d4ff', '#7c3aed'] },
+    { id: 'oscuro-premium', label: 'Oscuro Premium', descripcion: 'Negro profundo con índigo y violeta', colores: ['#070708', '#6366f1', '#8b5cf6'] },
+    { id: 'claro-minimalista', label: 'Claro Minimalista', descripcion: 'Blanco limpio con esmeralda', colores: ['#f8f9fa', '#10b981', '#34d399'] },
+    { id: 'neon-futurista', label: 'Neón Futurista', descripcion: 'Azul marino con neón cyan', colores: ['#0a0e27', '#00d4ff', '#7c3aed'] },
+    { id: 'ocean-glass', label: 'Ocean Glass', descripcion: 'Azul oceánico con glassmorphism', colores: ['#0c1929', '#06b6d4', '#14b8a6'] },
+    { id: 'midnight-purple', label: 'Midnight Purple', descripcion: 'Púrpura profundo con rosa neón', colores: ['#0d0518', '#ec4899', '#a855f7'] },
+    { id: 'warm-sunset', label: 'Warm Sunset', descripcion: 'Cálido con naranjas y dorados', colores: ['#1a0f08', '#f97316', '#fbbf24'] },
+    { id: 'forest-green', label: 'Forest Green', descripcion: 'Verde bosque con dorado', colores: ['#0a1f14', '#22c55e', '#eab308'] },
+    { id: 'dark-cyber', label: 'Dark Cyber', descripcion: 'Negro puro con neón verde', colores: ['#000000', '#00ff9f', '#00d4ff'] },
+    { id: 'candy-pastel', label: 'Candy Pastel', descripcion: 'Pasteles suaves rosa y lila', colores: ['#fef3f7', '#ec4899', '#a855f7'] },
+    { id: 'classic-gold', label: 'Classic Gold', descripcion: 'Negro elegante con dorado', colores: ['#0a0a0a', '#eab308', '#fbbf24'] },
+    { id: 'aurora', label: 'Aurora', descripcion: 'Multicolor con gradientes vibrantes', colores: ['#050516', '#8b5cf6', '#ec4899'] },
   ]
 
   const densidades: { id: Densidad; label: string; descripcion: string }[] = [
@@ -44,7 +52,7 @@ export function AparienciaTab() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
           {temas.map((t) => {
             const active = apariencia.tema === t.id
             return (

@@ -217,6 +217,343 @@
   --bg-solid: #0a0e27;
 }
 
+/* ============================================
+   TEMA 4: Ocean Glass
+   Azul oceánico con glassmorphism
+   ============================================ */
+[data-theme="ocean-glass"] {
+  --radius: 0.75rem;
+  --background: #0c1929;
+  --foreground: #e0f2fe;
+  --card: rgba(14, 165, 233, 0.05);
+  --card-foreground: #e0f2fe;
+  --popover: #0c1929;
+  --popover-foreground: #e0f2fe;
+  --primary: #06b6d4;
+  --primary-foreground: #ffffff;
+  --secondary: rgba(14, 165, 233, 0.1);
+  --secondary-foreground: #e0f2fe;
+  --muted: rgba(14, 165, 233, 0.06);
+  --muted-foreground: #7dd3fc;
+  --accent: rgba(6, 182, 212, 0.15);
+  --accent-foreground: #ffffff;
+  --destructive: #f43f5e;
+  --destructive-foreground: #ffffff;
+  --border: rgba(125, 211, 252, 0.15);
+  --input: rgba(125, 211, 252, 0.15);
+  --ring: #06b6d4;
+  --chart-1: #06b6d4;
+  --chart-2: #0ea5e9;
+  --chart-3: #14b8a6;
+  --chart-4: #f59e0b;
+  --chart-5: #f43f5e;
+  --sidebar: rgba(12, 25, 41, 0.6);
+  --sidebar-foreground: #e0f2fe;
+  --sidebar-primary: #06b6d4;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: rgba(6, 182, 212, 0.15);
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: rgba(125, 211, 252, 0.15);
+  --sidebar-ring: #06b6d4;
+  --bg-gradient-1: rgba(6, 182, 212, 0.18);
+  --bg-gradient-2: rgba(14, 165, 233, 0.12);
+  --bg-solid: #0c1929;
+}
+
+/* ============================================
+   TEMA 5: Midnight Purple
+   ============================================ */
+[data-theme="midnight-purple"] {
+  --radius: 0.75rem;
+  --background: #0d0518;
+  --foreground: #f3e8ff;
+  --card: rgba(168, 85, 247, 0.06);
+  --card-foreground: #f3e8ff;
+  --popover: #0d0518;
+  --popover-foreground: #f3e8ff;
+  --primary: #ec4899;
+  --primary-foreground: #ffffff;
+  --secondary: rgba(168, 85, 247, 0.12);
+  --secondary-foreground: #f3e8ff;
+  --muted: rgba(168, 85, 247, 0.08);
+  --muted-foreground: #c084fc;
+  --accent: rgba(236, 72, 153, 0.18);
+  --accent-foreground: #ffffff;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --border: rgba(192, 132, 252, 0.15);
+  --input: rgba(192, 132, 252, 0.15);
+  --ring: #ec4899;
+  --chart-1: #ec4899;
+  --chart-2: #a855f7;
+  --chart-3: #8b5cf6;
+  --chart-4: #f59e0b;
+  --chart-5: #10b981;
+  --sidebar: rgba(13, 5, 24, 0.7);
+  --sidebar-foreground: #f3e8ff;
+  --sidebar-primary: #ec4899;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: rgba(236, 72, 153, 0.18);
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: rgba(192, 132, 252, 0.15);
+  --sidebar-ring: #ec4899;
+  --bg-gradient-1: rgba(236, 72, 153, 0.2);
+  --bg-gradient-2: rgba(168, 85, 247, 0.15);
+  --bg-solid: #0d0518;
+}
+
+/* ============================================
+   TEMA 6: Warm Sunset
+   ============================================ */
+[data-theme="warm-sunset"] {
+  --radius: 0.75rem;
+  --background: #1a0f08;
+  --foreground: #fef3c7;
+  --card: rgba(249, 115, 22, 0.06);
+  --card-foreground: #fef3c7;
+  --popover: #1a0f08;
+  --popover-foreground: #fef3c7;
+  --primary: #f97316;
+  --primary-foreground: #ffffff;
+  --secondary: rgba(249, 115, 22, 0.12);
+  --secondary-foreground: #fef3c7;
+  --muted: rgba(249, 115, 22, 0.08);
+  --muted-foreground: #fbbf24;
+  --accent: rgba(249, 115, 22, 0.18);
+  --accent-foreground: #ffffff;
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  --border: rgba(251, 191, 36, 0.15);
+  --input: rgba(251, 191, 36, 0.15);
+  --ring: #f97316;
+  --chart-1: #f97316;
+  --chart-2: #fbbf24;
+  --chart-3: #facc15;
+  --chart-4: #ef4444;
+  --chart-5: #84cc16;
+  --sidebar: rgba(26, 15, 8, 0.7);
+  --sidebar-foreground: #fef3c7;
+  --sidebar-primary: #f97316;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: rgba(249, 115, 22, 0.18);
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: rgba(251, 191, 36, 0.15);
+  --sidebar-ring: #f97316;
+  --bg-gradient-1: rgba(249, 115, 22, 0.2);
+  --bg-gradient-2: rgba(251, 191, 36, 0.12);
+  --bg-solid: #1a0f08;
+}
+
+/* ============================================
+   TEMA 7: Forest Green
+   ============================================ */
+[data-theme="forest-green"] {
+  --radius: 0.75rem;
+  --background: #0a1f14;
+  --foreground: #d1fae5;
+  --card: rgba(34, 197, 94, 0.06);
+  --card-foreground: #d1fae5;
+  --popover: #0a1f14;
+  --popover-foreground: #d1fae5;
+  --primary: #22c55e;
+  --primary-foreground: #ffffff;
+  --secondary: rgba(34, 197, 94, 0.12);
+  --secondary-foreground: #d1fae5;
+  --muted: rgba(34, 197, 94, 0.08);
+  --muted-foreground: #86efac;
+  --accent: rgba(234, 179, 8, 0.18);
+  --accent-foreground: #ffffff;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --border: rgba(134, 239, 172, 0.15);
+  --input: rgba(134, 239, 172, 0.15);
+  --ring: #22c55e;
+  --chart-1: #22c55e;
+  --chart-2: #eab308;
+  --chart-3: #84cc16;
+  --chart-4: #f59e0b;
+  --chart-5: #10b981;
+  --sidebar: rgba(10, 31, 20, 0.7);
+  --sidebar-foreground: #d1fae5;
+  --sidebar-primary: #22c55e;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: rgba(234, 179, 8, 0.18);
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: rgba(134, 239, 172, 0.15);
+  --sidebar-ring: #22c55e;
+  --bg-gradient-1: rgba(34, 197, 94, 0.18);
+  --bg-gradient-2: rgba(234, 179, 8, 0.12);
+  --bg-solid: #0a1f14;
+}
+
+/* ============================================
+   TEMA 8: Dark Cyber
+   ============================================ */
+[data-theme="dark-cyber"] {
+  --radius: 0.5rem;
+  --background: #000000;
+  --foreground: #00ff9f;
+  --card: rgba(0, 255, 159, 0.04);
+  --card-foreground: #00ff9f;
+  --popover: #000000;
+  --popover-foreground: #00ff9f;
+  --primary: #00ff9f;
+  --primary-foreground: #000000;
+  --secondary: rgba(0, 255, 159, 0.1);
+  --secondary-foreground: #00ff9f;
+  --muted: rgba(0, 255, 159, 0.06);
+  --muted-foreground: #00cc7f;
+  --accent: rgba(0, 212, 255, 0.18);
+  --accent-foreground: #00d4ff;
+  --destructive: #ff0055;
+  --destructive-foreground: #ffffff;
+  --border: rgba(0, 255, 159, 0.2);
+  --input: rgba(0, 255, 159, 0.2);
+  --ring: #00ff9f;
+  --chart-1: #00ff9f;
+  --chart-2: #00d4ff;
+  --chart-3: #ff00ff;
+  --chart-4: #ffff00;
+  --chart-5: #ff0055;
+  --sidebar: rgba(0, 0, 0, 0.8);
+  --sidebar-foreground: #00ff9f;
+  --sidebar-primary: #00ff9f;
+  --sidebar-primary-foreground: #000000;
+  --sidebar-accent: rgba(0, 212, 255, 0.18);
+  --sidebar-accent-foreground: #00d4ff;
+  --sidebar-border: rgba(0, 255, 159, 0.2);
+  --sidebar-ring: #00ff9f;
+  --bg-gradient-1: rgba(0, 255, 159, 0.12);
+  --bg-gradient-2: rgba(0, 212, 255, 0.08);
+  --bg-solid: #000000;
+}
+
+/* ============================================
+   TEMA 9: Candy Pastel
+   ============================================ */
+[data-theme="candy-pastel"] {
+  --radius: 1rem;
+  --background: #fef3f7;
+  --foreground: #4a1a3a;
+  --card: rgba(244, 114, 182, 0.08);
+  --card-foreground: #4a1a3a;
+  --popover: #fff5f9;
+  --popover-foreground: #4a1a3a;
+  --primary: #ec4899;
+  --primary-foreground: #ffffff;
+  --secondary: rgba(196, 181, 253, 0.2);
+  --secondary-foreground: #4a1a3a;
+  --muted: rgba(244, 114, 182, 0.1);
+  --muted-foreground: #be185d;
+  --accent: rgba(196, 181, 253, 0.25);
+  --accent-foreground: #4a1a3a;
+  --destructive: #e11d48;
+  --destructive-foreground: #ffffff;
+  --border: rgba(244, 114, 182, 0.2);
+  --input: rgba(244, 114, 182, 0.2);
+  --ring: #ec4899;
+  --chart-1: #ec4899;
+  --chart-2: #a855f7;
+  --chart-3: #60a5fa;
+  --chart-4: #fbbf24;
+  --chart-5: #34d399;
+  --sidebar: rgba(255, 245, 249, 0.7);
+  --sidebar-foreground: #4a1a3a;
+  --sidebar-primary: #ec4899;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: rgba(196, 181, 253, 0.25);
+  --sidebar-accent-foreground: #4a1a3a;
+  --sidebar-border: rgba(244, 114, 182, 0.2);
+  --sidebar-ring: #ec4899;
+  --bg-gradient-1: rgba(236, 72, 153, 0.15);
+  --bg-gradient-2: rgba(168, 85, 247, 0.1);
+  --bg-solid: #fef3f7;
+}
+
+/* ============================================
+   TEMA 10: Classic Gold
+   ============================================ */
+[data-theme="classic-gold"] {
+  --radius: 0.5rem;
+  --background: #0a0a0a;
+  --foreground: #fef3c7;
+  --card: rgba(234, 179, 8, 0.05);
+  --card-foreground: #fef3c7;
+  --popover: #0a0a0a;
+  --popover-foreground: #fef3c7;
+  --primary: #eab308;
+  --primary-foreground: #0a0a0a;
+  --secondary: rgba(234, 179, 8, 0.1);
+  --secondary-foreground: #fef3c7;
+  --muted: rgba(234, 179, 8, 0.06);
+  --muted-foreground: #a16207;
+  --accent: rgba(234, 179, 8, 0.18);
+  --accent-foreground: #fef3c7;
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  --border: rgba(234, 179, 8, 0.2);
+  --input: rgba(234, 179, 8, 0.2);
+  --ring: #eab308;
+  --chart-1: #eab308;
+  --chart-2: #f59e0b;
+  --chart-3: #d97706;
+  --chart-4: #92400e;
+  --chart-5: #fbbf24;
+  --sidebar: rgba(10, 10, 10, 0.8);
+  --sidebar-foreground: #fef3c7;
+  --sidebar-primary: #eab308;
+  --sidebar-primary-foreground: #0a0a0a;
+  --sidebar-accent: rgba(234, 179, 8, 0.18);
+  --sidebar-accent-foreground: #fef3c7;
+  --sidebar-border: rgba(234, 179, 8, 0.2);
+  --sidebar-ring: #eab308;
+  --bg-gradient-1: rgba(234, 179, 8, 0.15);
+  --bg-gradient-2: rgba(245, 158, 11, 0.08);
+  --bg-solid: #0a0a0a;
+}
+
+/* ============================================
+   TEMA 11: Aurora
+   ============================================ */
+[data-theme="aurora"] {
+  --radius: 1rem;
+  --background: #050516;
+  --foreground: #e0e7ff;
+  --card: rgba(139, 92, 246, 0.06);
+  --card-foreground: #e0e7ff;
+  --popover: #050516;
+  --popover-foreground: #e0e7ff;
+  --primary: #8b5cf6;
+  --primary-foreground: #ffffff;
+  --secondary: rgba(139, 92, 246, 0.12);
+  --secondary-foreground: #e0e7ff;
+  --muted: rgba(139, 92, 246, 0.08);
+  --muted-foreground: #a5b4fc;
+  --accent: rgba(236, 72, 153, 0.18);
+  --accent-foreground: #ffffff;
+  --destructive: #f43f5e;
+  --destructive-foreground: #ffffff;
+  --border: rgba(165, 180, 252, 0.18);
+  --input: rgba(165, 180, 252, 0.18);
+  --ring: #8b5cf6;
+  --chart-1: #8b5cf6;
+  --chart-2: #ec4899;
+  --chart-3: #06b6d4;
+  --chart-4: #f59e0b;
+  --chart-5: #10b981;
+  --sidebar: rgba(5, 5, 22, 0.7);
+  --sidebar-foreground: #e0e7ff;
+  --sidebar-primary: #8b5cf6;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: rgba(236, 72, 153, 0.18);
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: rgba(165, 180, 252, 0.18);
+  --sidebar-ring: #8b5cf6;
+  --bg-gradient-1: rgba(139, 92, 246, 0.22);
+  --bg-gradient-2: rgba(236, 72, 153, 0.18);
+  --bg-solid: #050516;
+}
+
 /* .dark ya no se usa - los temas se controlan con data-theme */
 
 * {
