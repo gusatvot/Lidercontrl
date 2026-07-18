@@ -23,6 +23,7 @@ import { useDashboard, useSessionActiva, useUsuarioActual } from '@/hooks/use-da
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Snowflake, PiggyBank, UserCircle, Plus } from 'lucide-react'
 import { formatCurrency } from '@/lib/format'
+import { PanelDerecho } from '@/components/dashboard/panel-derecho'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -413,24 +414,17 @@ function AppShell() {
     )
   }
 
-  // Desktop layout (sidebar + header)
+  // Desktop layout (3 columnas estilo Neo Finance)
   return (
     <div className="flex h-screen overflow-hidden">
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
-        <div className="px-6 md:px-8 pt-6 md:pt-8">
-          <Header
-            onAgregarGasto={() => useAppStore.getState().abrirGastoDialog('fijo')}
-            onAbrirCmdk={() => setCmdkOpen(true)}
-          />
-        </div>
-        <main className="flex-1 p-6 md:p-8 overflow-y-auto h-screen">
-          <div className="flex items-center justify-end mb-4">
-            <UsuarioSwitcher />
-          </div>
+        <main className="flex-1 overflow-y-auto px-8 py-6">
+          <Header onAbrirCmdk={() => setCmdkOpen(true)} />
           <MainContent />
         </main>
       </div>
+      <PanelDerecho />
 
       <GastoDialog open={dialogOpen} onOpenChange={setDialogOpen} />
       <IngresoDialog open={ingresoOpen} onOpenChange={setIngresoOpen} />

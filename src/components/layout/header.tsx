@@ -1,103 +1,80 @@
 'use client'
 
 import { useAppStore } from '@/store/app'
-import { MESES } from '@/lib/types'
-import { ChevronLeft, ChevronRight, Plus } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { useSessionActiva } from '@/hooks/use-data'
+import { Bell, Search } from 'lucide-react'
+import { Input } from '@/components/ui/input'
+import { useState } from 'react'
 
-interface HeaderProps {
-  onAgregarGasto: () => void
-  onAbrirCmdk?: () => void
-}
+const MESES = [
+  'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+  'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre',
+]
 
-export function Header({ onAgregarGasto }: HeaderProps) {
-  const { seccion, mes, anio, mesAnterior, mesSiguiente, abrirIngresoDialog, abrirGastoDialog } = useAppStore()
+export function Header({ onAbrirCmdk }: { onAbrirCmdk?: () => void }) {
+  const { mes, anio, mesAnterior, mesSiguiente, usuarioActivoNombre } = useAppStore()
+  const { data: sessionData } = useSessionActiva()
+  const [notifOpen, setNotifOpen] = useState(false)
 
-  const titulos: Record<string, { titulo: string; sub: string }> = {
-    dashboard: { titulo: 'Resumen', sub: `${MESES[mes - 1]} ${anio}` },
-    ingresos: { titulo: 'Ingresos', sub: `${MESES[mes - 1]} ${anio}` },
-    'gastos-fijos': { titulo: 'Gastos Fijos', sub: `${MESES[mes - 1]} ${anio}` },
-    'gastos-variables': { titulo: 'Gastos Diarios', sub: `${MESES[mes - 1]} ${anio}` },
-    deudas: { titulo: 'Pago de Deudas', sub: 'Método Bola de Nieve' },
-    ahorros: { titulo: 'Ahorros', sub: 'Metas y progreso' },
-    reportes: { titulo: 'Reportes', sub: `${MESES[mes - 1]} ${anio}` },
-    chat: { titulo: 'Chat Familiar', sub: 'Mensajes y transferencias' },
-    ajustes: { titulo: 'Ajustes', sub: 'Personaliza tu experiencia' },
-  }
-
-  const { titulo, sub } = titulos[seccion]
-
-  // El botón del header solo aparece en Dashboard.
-  // En Ingresos, Gastos Fijos y Gastos Diarios, cada sección tiene su propio botón.
-  const esSeccionIngresos = seccion === 'ingresos'
-  const esSeccionDashboard = seccion === 'dashboard'
-  const mostrarBotonAccion = esSeccionDashboard
-  const mostrarSelectorMes = seccion !== 'chat' && seccion !== 'ajustes' && seccion !== 'deudas' && seccion !== 'ahorros' && seccion !== 'reportes'
-
-  const handleAgregar = () => {
-    if (esSeccionIngresos) {
-      abrirIngresoDialog()
-    } else {
-      // En el dashboard, el botón agrega gastos diarios (variables)
-      abrirGastoDialog('variable')
-    }
+  const usuario = sessionData?.usuario
+  const saludo = () => {
+    const h = new Date().getHours()
+    if (h < 12) return 'Buenos días'
+    if (h < 19) return 'Buenas tardes'
+    return 'Buenas noches'
   }
 
   return (
-    <header className="flex justify-between items-center mb-8 flex-wrap gap-4">
-      <div className="flex items-center gap-4">
-        <div>
-          <motion.h1
-            key={titulo}
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-[2rem] font-bold tracking-tight"
-          >
-            {titulo}{' '}
-            <span className="bg-gradient-to-r from-[var(--primary)] to-[var(--chart-2)] bg-clip-text text-transparent">
-              {sub}
-            </span>
-          </motion.h1>
-        </div>
-
-        {/* Selector de mes (solo en secciones financieras) */}
-        {mostrarSelectorMes && (
-          <div className="flex items-center gap-1 glass rounded-xl p-1">
-            <button
-              onClick={mesAnterior}
-              className="p-1.5 rounded-lg hover:bg-[var(--secondary)] transition-colors cursor-pointer"
-              aria-label="Mes anterior"
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </button>
-            <span className="text-sm font-medium px-3 tabular min-w-[120px] text-center">
-              {MESES[mes - 1]} {anio}
-            </span>
-            <button
-              onClick={mesSiguiente}
-              className="p-1.5 rounded-lg hover:bg-[var(--secondary)] transition-colors cursor-pointer"
-              aria-label="Mes siguiente"
-            >
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          </div>
-        )}
+    <header className="flex items-center justify-between gap-4 mb-6">
+      {/* Saludo */}
+      <div>
+        <h1 className="text-2xl font-bold">
+          {saludo()}, {usuario?.nombre || usuarioActivoNombre}! 👋
+        </h1>
+        <p className="text-sm text-[var(--muted-foreground)] mt-0.5">
+          {MESES[mes - 1]} {anio}
+        </p>
       </div>
 
-      <div className="flex gap-3 items-center">
-        {mostrarBotonAccion && (
-          <button
-            onClick={handleAgregar}
-            className={`px-5 py-2.5 rounded-xl text-[var(--foreground)] text-sm font-semibold border-none cursor-pointer flex items-center gap-2 transition-all hover:-translate-y-0.5 ${
-              esSeccionIngresos
-                ? 'bg-gradient-to-br from-[#10b981] to-[#34d399] shadow-[0_4px_15px_rgba(16,185,129,0.4)] hover:shadow-[0_6px_20px_rgba(16,185,129,0.6)]'
-                : 'bg-gradient-to-br from-[#f59e0b] to-[#fbbf24] shadow-[0_4px_15px_rgba(245,158,11,0.4)] hover:shadow-[0_6px_20px_rgba(245,158,11,0.6)]'
-            }`}
+      {/* Acciones derecha */}
+      <div className="flex items-center gap-3">
+        {/* Buscador */}
+        <button
+          onClick={onAbrirCmdk}
+          className="hidden md:flex items-center gap-2 px-3 py-2 rounded-xl bg-[var(--card)] border border-[var(--border)] text-sm text-[var(--muted-foreground)] hover:bg-[var(--secondary)] cursor-pointer transition-all"
+        >
+          <Search className="w-4 h-4" />
+          <span>Buscar...</span>
+          <kbd className="ml-4 px-1.5 py-0.5 rounded-md bg-[var(--secondary)] text-[0.65rem] font-mono">⌘K</kbd>
+        </button>
+
+        {/* Notificaciones */}
+        <button
+          onClick={() => setNotifOpen(!notifOpen)}
+          className="relative w-11 h-11 rounded-xl bg-[var(--card)] border border-[var(--border)] flex items-center justify-center cursor-pointer hover:bg-[var(--secondary)] transition-all"
+        >
+          <Bell className="w-5 h-5 text-[var(--foreground)]" />
+          <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-[var(--primary)] text-[var(--primary-foreground)] text-[0.65rem] font-bold flex items-center justify-center shadow-[0_0_10px_rgba(0,255,163,0.5)]">
+            2
+          </span>
+        </button>
+
+        {/* Avatar */}
+        <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[var(--card)] border border-[var(--border)]">
+          <div
+            className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold"
+            style={{
+              background: `${usuario?.color || '#00ffa3'}25`,
+              color: usuario?.color || '#00ffa3',
+            }}
           >
-            <Plus className="w-4 h-4" />
-            {esSeccionIngresos ? 'Agregar Ingreso' : 'Agregar Gasto Diario'}
-          </button>
-        )}
+            {(usuario?.nombre || usuarioActivoNombre).slice(0, 1).toUpperCase()}
+          </div>
+          <div className="hidden md:block">
+            <div className="text-sm font-semibold">{usuario?.nombre || usuarioActivoNombre}</div>
+            <div className="text-[0.65rem] text-[var(--muted-foreground)]">@{usuario?.username || 'demo'}</div>
+          </div>
+        </div>
       </div>
     </header>
   )
